@@ -33,7 +33,7 @@ namespace Remove_TUPrep
             foreach (var line in allLines)
             {
                 string[] lineParts = line.Split('\t');
-                if (!String.IsNullOrEmpty(lineParts[8]))
+                if (!string.IsNullOrEmpty(lineParts[8]))
                     countAllBefore++;
                 if (lineParts[8].ToUpper().Contains("TUPREP") && (lineParts[8].ToUpper().Contains(_luNames[0])
                                                                   || lineParts[8].ToUpper().Contains(_luNames[1])
@@ -65,22 +65,24 @@ namespace Remove_TUPrep
                 // Вытаскиваем тег на задвижку
                 string tagName = string.Empty;
                 if (lineParts[3].Equals("Valve") && (!lineParts[1].Contains("МНС") || !lineParts[1].Contains("УРД") ||
-                                                     !lineParts[1].Contains("НПС") || !lineParts[1].Contains("РП")) ||
-                    !lineParts[1].Contains("ПНС") && lineParts[6].Equals("ID") && !string.IsNullOrEmpty(lineParts[8]))
+                                                     !lineParts[1].Contains("НПС") || !lineParts[1].Contains("РП") ||
+                                                     !lineParts[1].Contains("ПНС")) && lineParts[6].Equals("ID") &&
+                    !string.IsNullOrEmpty(lineParts[8]))
                 {
                     tagName = lineParts[8];
+                    Console.WriteLine(tagName);
                 }
                 else
                 {
                     tagName = string.Empty;
                 }
                 // Добавляем тег TUPREP на текущее задвижку, если она отвечает условиям отсутствия ЦСПА
-                if (!string.IsNullOrEmpty(tagName) && (!lineParts[8].ToUpper().Contains(_luNames[0])
-                    || !lineParts[8].ToUpper().Contains(_luNames[1])
-                    || !lineParts[8].ToUpper().Contains(_luNames[2])
-                    || !lineParts[8].ToUpper().Contains(_luNames[3])
-                    || !lineParts[8].ToUpper().Contains(_luNames[4]))
-                    && !lineParts[8].ToUpper().Contains("NPS_") && (lineParts[6].Equals("CanBeControlled")))
+                if (!string.IsNullOrEmpty(tagName) && (!tagName.ToUpper().Contains(_luNames[0])
+                    || !tagName.ToUpper().Contains(_luNames[1])
+                    || !tagName.ToUpper().Contains(_luNames[2])
+                    || !tagName.ToUpper().Contains(_luNames[3])
+                    || !tagName.ToUpper().Contains(_luNames[4]))
+                    && !tagName.ToUpper().Contains("NPS_") && (lineParts[6].Equals("CanBeControlled")))
                 {
                     lineParts[8] = tagName + ".TUPREP";
                     countAdded++;
@@ -96,7 +98,14 @@ namespace Remove_TUPrep
 
             outputFile2.Close();
 
-            Console.WriteLine($"Total tags count before operations: {countAllBefore}\nTags removed: {countRemoved} added: {countAdded}");
+            var lines = File.ReadAllLines("druzhba_good.txt");
+            foreach (var line in lines)
+            {
+                var lineParts = line.Split('\t');
+                if (!string.IsNullOrEmpty(lineParts[8]))
+                    countAllAfter++;
+            }
+            Console.WriteLine($"Total tags count before operations: {countAllBefore}\nTags removed: {countRemoved} added: {countAdded}\nTotal tags after: {countAllAfter}");
             Console.WriteLine("Done!");
             Console.ReadKey();
         }
