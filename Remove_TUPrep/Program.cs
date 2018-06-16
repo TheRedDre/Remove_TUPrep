@@ -19,7 +19,7 @@ namespace Remove_TUPrep
             "LU_KUZN"
         };
 
-        static void Main()
+        private static void Main()
         {
             int countRemoved = 0;
             int countAllBefore = 0;
